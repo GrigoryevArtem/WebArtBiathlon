@@ -7,8 +7,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Emgu.CV" Version="4.8.0.5324" />
+    <PackageReference Include="Emgu.CV.runtime.mini.macos" Version="4.8.0.5324" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ArtBiathlon.Domain\ArtBiathlon.Domain.csproj" />
+    <ProjectReference Include="..\ArtBiathlon.Dal\ArtBiathlon.Dal.csproj" />
+    <ProjectReference Include="..\ArtBiathlon.Services\ArtBiathlon.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Images\" />
+    <Folder Include="Requests\V1\" />
+  </ItemGroup>
+  
 </Project>
