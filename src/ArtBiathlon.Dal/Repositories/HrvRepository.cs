@@ -64,7 +64,7 @@ internal class HrvRepository : DbRepository, IHrvRepository
 
         if (hrvIndicators is null)
         {
-            throw new HrvIndicatorsNotFoundInThisTime();
+            throw new HrvIndicatorsNotFoundInThisTimeException();
         }
 
         return hrvIndicators
