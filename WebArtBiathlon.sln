@@ -7,6 +7,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BA18B42B-A55
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtBiathlon.Api", "src\ArtBiathlon.Api\ArtBiathlon.Api.csproj", "{AC9B4AD5-1218-4A0C-9738-C11C3F804A6C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtBiathlon.Domain", "src\ArtBiathlon.Domain\ArtBiathlon.Domain.csproj", "{E5EB9406-C2C0-425C-B0AA-64E9FE191472}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtBiathlon.Dal", "src\ArtBiathlon.Dal\ArtBiathlon.Dal.csproj", "{145A16FE-92BD-4E3C-B260-2092B219AD33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtBiathlon.Services", "src\ArtBiathlon.Services\ArtBiathlon.Services.csproj", "{AFC3674D-5611-47DD-A96F-8F052F93B8BD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,8 +26,23 @@ Global
 		{AC9B4AD5-1218-4A0C-9738-C11C3F804A6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC9B4AD5-1218-4A0C-9738-C11C3F804A6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC9B4AD5-1218-4A0C-9738-C11C3F804A6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5EB9406-C2C0-425C-B0AA-64E9FE191472}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5EB9406-C2C0-425C-B0AA-64E9FE191472}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5EB9406-C2C0-425C-B0AA-64E9FE191472}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5EB9406-C2C0-425C-B0AA-64E9FE191472}.Release|Any CPU.Build.0 = Release|Any CPU
+		{145A16FE-92BD-4E3C-B260-2092B219AD33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{145A16FE-92BD-4E3C-B260-2092B219AD33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{145A16FE-92BD-4E3C-B260-2092B219AD33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{145A16FE-92BD-4E3C-B260-2092B219AD33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFC3674D-5611-47DD-A96F-8F052F93B8BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFC3674D-5611-47DD-A96F-8F052F93B8BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFC3674D-5611-47DD-A96F-8F052F93B8BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFC3674D-5611-47DD-A96F-8F052F93B8BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AC9B4AD5-1218-4A0C-9738-C11C3F804A6C} = {BA18B42B-A55F-4431-9956-9A8B80C6DD87}
+		{E5EB9406-C2C0-425C-B0AA-64E9FE191472} = {BA18B42B-A55F-4431-9956-9A8B80C6DD87}
+		{145A16FE-92BD-4E3C-B260-2092B219AD33} = {BA18B42B-A55F-4431-9956-9A8B80C6DD87}
+		{AFC3674D-5611-47DD-A96F-8F052F93B8BD} = {BA18B42B-A55F-4431-9956-9A8B80C6DD87}
 	EndGlobalSection
 EndGlobal
