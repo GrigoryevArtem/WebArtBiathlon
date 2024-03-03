@@ -1,41 +1,41 @@
 using ArtBiathlon.Domain.Exceptions.Infrastructure;
 using ArtBiathlon.Domain.Exceptions.User;
-using ArtBiathlon.Domain.Interfaces.Dal;
 using ArtBiathlon.Domain.Interfaces.Dal.User;
 using ArtBiathlon.Domain.Interfaces.Dal.UserInfo;
 using ArtBiathlon.Domain.Interfaces.Services.User;
 using ArtBiathlon.Domain.Models;
 using ArtBiathlon.Domain.Models.User.UserSign;
 using ArtBiathlon.Services.Helpers;
+using FluentValidation;
 
-namespace ArtBiathlon.Services.Services.Users;
+namespace ArtBiathlon.Services.Services.User;
 
 internal class SignInService : ISignInService
 {
-    // private readonly IValidator<SignInModel> _validator;
     private readonly IJwtService _jwtService;
     private readonly IUserCredentialRepository _userCredentialRepository;
     private readonly IUserInfoRepository _userInfoRepository;
+    private readonly IValidator<SignInDto> _validator;
 
     public SignInService(
-        //IValidator<SignInModel> validator,
         IJwtService jwtService,
         IUserCredentialRepository userCredentialRepository,
-        IUserInfoRepository userInfoRepository)
+        IUserInfoRepository userInfoRepository,
+        IValidator<SignInDto> validator)
     {
-        //_validator = validator;
         _jwtService = jwtService;
         _userCredentialRepository = userCredentialRepository;
         _userInfoRepository = userInfoRepository;
+        _validator = validator;
     }
 
     public async Task<string> SignInAsync(SignInDto singInDto, CancellationToken token)
     {
-        // await _validator.ValidateAndThrowAsync(signInModel);
+        await _validator.ValidateAndThrowAsync(singInDto, cancellationToken: token);
 
         var userModelWithId = await AuthenticateAndThrowAsync(singInDto, token);
 
-        return _jwtService.GenerateToken(userModelWithId);
+        return await _jwtService.GenerateToken(userModelWithId, token);
     }
 
     private async Task<ModelDtoWithId<UserAuthenticationDto>> AuthenticateAndThrowAsync(SignInDto singInDto,
@@ -60,7 +60,7 @@ internal class SignInService : ISignInService
     private async Task<ModelDtoWithId<UserAuthenticationDto>> GetUserModelAsync(string login, CancellationToken token)
     {
         var user = await _userCredentialRepository.GetUserByLoginAsync(login, token);
-        
+
         var userInfo = await _userInfoRepository.GetUserInfoByIdAsync(user.Id, token);
 
         return new ModelDtoWithId<UserAuthenticationDto>(

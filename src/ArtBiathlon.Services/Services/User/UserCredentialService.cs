@@ -4,22 +4,26 @@ using ArtBiathlon.Domain.Interfaces.Dal.User;
 using ArtBiathlon.Domain.Interfaces.Services.User;
 using ArtBiathlon.Domain.Models;
 using ArtBiathlon.Domain.Models.User.UserCredential;
+using FluentValidation;
 
 namespace ArtBiathlon.Services.Services.User;
 
 public class UserCredentialService : IUserCredentialService
 {
     private readonly IUserCredentialRepository _userCredentialRepository;
+    private readonly IValidator<UserDto> _validator;
 
-    public UserCredentialService(IUserCredentialRepository userCredentialRepository)
+    public UserCredentialService(IUserCredentialRepository userCredentialRepository, IValidator<UserDto> validator)
     {
         _userCredentialRepository = userCredentialRepository;
+        _validator = validator;
     }
 
     public async Task<long> CreateUserAsync(UserDto userDto, CancellationToken token)
     {
         try
         {
+            await _validator.ValidateAndThrowAsync(userDto, cancellationToken: token);
             return await _userCredentialRepository.CreateUserAsync(userDto, token);
         }
         catch (UserNameAlreadyExistsException ex)
@@ -76,11 +80,12 @@ public class UserCredentialService : IUserCredentialService
         }
     }
 
-    public async Task UpdateUserAsync(long id, UserDto user, CancellationToken token)
+    public async Task UpdateUserAsync(long id, UserDto userDto, CancellationToken token)
     {
         try
         {
-            await _userCredentialRepository.UpdateUserAsync(id, user, token);
+            await _validator.ValidateAndThrowAsync(userDto, cancellationToken: token);
+            await _userCredentialRepository.UpdateUserAsync(id, userDto, token);
         }
         catch (UserNotFoundException ex)
         {

@@ -1,26 +1,29 @@
 using System.Data;
 using ArtBiathlon.Domain.Exceptions.UserInfo;
-using ArtBiathlon.Domain.Interfaces.Dal;
 using ArtBiathlon.Domain.Interfaces.Dal.UserInfo;
 using ArtBiathlon.Domain.Interfaces.Services.UserInfo;
 using ArtBiathlon.Domain.Models;
 using ArtBiathlon.Domain.Models.User.UserInfo;
+using FluentValidation;
 
 namespace ArtBiathlon.Services.Services.UserInfo;
 
 internal class UserInfoService : IUserInfoService
 {
     private readonly IUserInfoRepository _userInfoRepository;
-
-    public UserInfoService(IUserInfoRepository userInfoRepository)
+    private readonly IValidator<UserInfoDto> _validator;
+    
+    public UserInfoService(IUserInfoRepository userInfoRepository, IValidator<UserInfoDto> validator)
     {
         _userInfoRepository = userInfoRepository;
+        _validator = validator;
     }
 
     public async Task<long> CreateUserInfoAsync(UserInfoDto userInfoDto, CancellationToken token)
     {
         try
         {
+            await _validator.ValidateAndThrowAsync(userInfoDto, cancellationToken: token);
             return await _userInfoRepository.CreateUserInfoAsync(userInfoDto, token);
         }
         catch (UserInfoAlreadyExistsException ex)
@@ -65,11 +68,12 @@ internal class UserInfoService : IUserInfoService
         }
     }
 
-    public async Task UpdateUserInfoAsync(long id, UserInfoDto userInfo, CancellationToken token)
+    public async Task UpdateUserInfoAsync(long id, UserInfoDto userInfoDto, CancellationToken token)
     {
         try
         {
-            await _userInfoRepository.UpdateUserInfoAsync(id, userInfo, token);
+            await _validator.ValidateAndThrowAsync(userInfoDto, cancellationToken: token);
+            await _userInfoRepository.UpdateUserInfoAsync(id, userInfoDto, token);
         }
         catch (UserInfoNotFoundException ex)
         {

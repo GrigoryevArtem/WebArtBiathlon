@@ -10,9 +10,8 @@ public class UserCredentialsWithIdDtoValidator : AbstractValidator<ModelDtoWithI
     {
         RuleFor(x => x.Id)
             .GreaterThanOrEqualTo(0);
-        
+
         RuleFor(x => x.Model)
             .SetValidator(new UserCredentialsDtoValidator());
     }
-    
 }

@@ -11,8 +11,7 @@ public class UserCredentialsDtoValidator : AbstractValidator<UserDto>
             .NotNull()
             .NotEmpty()
             .Length(4, 16);
-        
-        
+
         RuleFor(x => x.PasswordHash)
             .NotNull()
             .NotEmpty();

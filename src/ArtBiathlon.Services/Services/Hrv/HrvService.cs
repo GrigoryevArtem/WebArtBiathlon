@@ -1,25 +1,31 @@
 using ArtBiathlon.Domain.Exceptions.Hrv;
 using ArtBiathlon.Domain.Exceptions.Infrastructure;
-using ArtBiathlon.Domain.Interfaces.Dal;
 using ArtBiathlon.Domain.Interfaces.Dal.Hrv;
 using ArtBiathlon.Domain.Interfaces.Services.Hrv;
 using ArtBiathlon.Domain.Models.Hrv;
+using FluentValidation;
 
 namespace ArtBiathlon.Services.Services.Hrv;
 
 public class HrvService : IHrvService
 {
     private readonly IHrvRepository _hrvRepository;
+    private readonly IValidator<HrvDto> _validator;
 
-    public HrvService(IHrvRepository hrvRepository)
+    public HrvService(IHrvRepository hrvRepository, IValidator<HrvDto> validator)
     {
         _hrvRepository = hrvRepository;
+        _validator = validator;
     }
 
     public async Task<long> CreateHrvAsync(HrvDto hrvDto, CancellationToken token)
     {
         try
         {
+            await _validator.ValidateAndThrowAsync(
+                hrvDto,
+                cancellationToken: token);
+
             return await _hrvRepository.CreateHrvAsync(hrvDto, token);
         }
         catch (HrvIndicatorsAlreadyExistsForThisDateException ex)
@@ -68,6 +74,10 @@ public class HrvService : IHrvService
     {
         try
         {
+            await _validator.ValidateAndThrowAsync(
+                hrvDto,
+                cancellationToken: token);
+
             await _hrvRepository.UpdateHrvAsync(id, hrvDto, token);
         }
         catch (HrvIndicatorsNotFoundException ex)

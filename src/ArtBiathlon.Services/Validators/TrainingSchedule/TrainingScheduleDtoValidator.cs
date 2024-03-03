@@ -24,6 +24,6 @@ public class TrainingScheduleDtoValidator : AbstractValidator<TrainingsScheduleD
 
         RuleFor(x => x.StartDate)
             .NotNull()
-            .LessThanOrEqualTo(DateTimeOffset.Now.AddYears(-5));
+            .GreaterThanOrEqualTo(DateTimeOffset.Now.AddYears(-5));
     }
 }

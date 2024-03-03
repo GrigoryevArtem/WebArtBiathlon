@@ -28,9 +28,11 @@ public class UserInfoDtoValidator : AbstractValidator<UserInfoDto>
             .LessThanOrEqualTo(DateTimeOffset.Now.AddYears(-10));
 
         RuleFor(x => x.Status)
+            .IsInEnum()
             .NotNull();
 
         RuleFor(x => x.Rank)
+            .IsInEnum()
             .NotNull();
 
         RuleFor(x => x.UserAvatar.Length)

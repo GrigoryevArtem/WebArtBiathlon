@@ -4,6 +4,7 @@ using ArtBiathlon.Domain.Interfaces.Dal.TrianingType;
 using ArtBiathlon.Domain.Interfaces.Services.TrainingType;
 using ArtBiathlon.Domain.Models;
 using ArtBiathlon.Domain.Models.TrainingType;
+using FluentValidation;
 
 
 namespace ArtBiathlon.Services.Services.TrainingType;
@@ -11,16 +12,18 @@ namespace ArtBiathlon.Services.Services.TrainingType;
 internal class TrainingTypeService : ITrainingTypeService
 {
     private readonly ITrainingTypeRepository _trainingTypeRepository;
-
-    public TrainingTypeService(ITrainingTypeRepository trainingTypeRepository)
+    private readonly IValidator<TrainingTypeDto> _validator;
+    public TrainingTypeService(ITrainingTypeRepository trainingTypeRepository, IValidator<TrainingTypeDto> validator)
     {
         _trainingTypeRepository = trainingTypeRepository;
+        _validator = validator;
     }
 
     public async Task<byte> CreateTrainingTypeAsync(TrainingTypeDto trainingTypeDto, CancellationToken token)
     {
         try
-        {
+        { 
+            await _validator.ValidateAndThrowAsync(trainingTypeDto, cancellationToken: token);
             return await _trainingTypeRepository.CreateTrainingTypeAsync(trainingTypeDto, token);
         }
         catch (TrainingTypeAlreadyExistsException ex)
@@ -69,6 +72,7 @@ internal class TrainingTypeService : ITrainingTypeService
     {
         try
         {
+            await _validator.ValidateAndThrowAsync(trainingTypeDto, cancellationToken: token);
             await _trainingTypeRepository.UpdateTrainingType(id, trainingTypeDto, token);
         }
         catch (TrainingTypeNotFoundException ex)

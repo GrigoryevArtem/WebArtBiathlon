@@ -11,8 +11,7 @@ public class SignUpDtoValidator : AbstractValidator<SignUpDto>
             .NotNull()
             .NotEmpty()
             .Length(4, 16);
-        
-        
+
         RuleFor(x => x.Password)
             .NotNull()
             .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,25}$")
