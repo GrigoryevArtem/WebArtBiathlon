@@ -1,10 +1,9 @@
 using ArtBiathlon.Dal.ExceptionChecks.User;
-using ArtBiathlon.Domain.Entities;
-using ArtBiathlon.Domain.Interfaces.Dal;
-using ArtBiathlon.Domain.Models;
 using ArtBiathlon.Dal.Settings;
+using ArtBiathlon.Domain.Entities;
 using ArtBiathlon.Domain.Exceptions.User;
 using ArtBiathlon.Domain.Interfaces.Dal.User;
+using ArtBiathlon.Domain.Models;
 using ArtBiathlon.Domain.Models.User.UserCredential;
 using Dapper;
 using Microsoft.Extensions.Options;
@@ -22,8 +21,8 @@ internal class UserCredentialRepository : DbRepository, IUserCredentialRepositor
         await using var connection = await GetAndOpenConnection(token);
 
         await UserExceptionChecks.ThrowIfUserNotFoundByUserNameAsync(login, connection);
-        
-        const string sqlQuery = @$"
+
+        const string sqlQuery = @"
         SELECT * FROM user_credential
             WHERE LOWER(login) = LOWER(@Login)";
 
@@ -31,7 +30,7 @@ internal class UserCredentialRepository : DbRepository, IUserCredentialRepositor
         {
             Login = login
         };
-        
+
         var response = await connection.QueryFirstAsync<UserDbo>(sqlQuery, sqlParams);
 
         return response.ToModelWithId();
@@ -43,19 +42,19 @@ internal class UserCredentialRepository : DbRepository, IUserCredentialRepositor
 
         await UserExceptionChecks.ThrowIfUserNotFoundAsync(id, connection);
 
-        const string sqlQuery = @$"
+        const string sqlQuery = @"
         UPDATE user_credential
         SET login = @Login,
             password = @Password
-        WHERE id = @Id";
-        
+        WHERE user_info_id = @Id";
+
         var sqlParams = new
         {
             Id = id,
             user.Login,
             user.PasswordHash
         };
-        
+
         await connection.QueryAsync(sqlQuery, sqlParams);
     }
 
@@ -64,13 +63,13 @@ internal class UserCredentialRepository : DbRepository, IUserCredentialRepositor
         await using var connection = await GetAndOpenConnection(token);
 
         await UserExceptionChecks.ThrowIfUserNameAlreadyExistsAsync(userDto.Login, connection);
-        
+
         const string sqlQuery = @$"
         INSERT INTO user_credential (login, password)
         VALUES (@{nameof(UserDto.Login)},
                 @{nameof(UserDto.PasswordHash)})
-        RETURNING id";
-        
+        RETURNING user_info_id";
+
         return await connection.QueryFirstAsync<long>(sqlQuery, userDto);
     }
 
@@ -80,16 +79,16 @@ internal class UserCredentialRepository : DbRepository, IUserCredentialRepositor
         await using var connection = await GetAndOpenConnection(token);
 
         await UserExceptionChecks.ThrowIfUserNotFoundAsync(id, connection);
-        
-        const string sqlQuery = @$"
+
+        const string sqlQuery = @"
         SELECT * FROM user_credential
-            WHERE id = @Id";
+            WHERE user_info_id = @Id";
 
         var sqlParams = new
         {
             Id = id
         };
-        
+
         var response = await connection.QueryFirstAsync<UserDbo>(sqlQuery, sqlParams);
 
         return response.ToModelWithId();
@@ -98,15 +97,12 @@ internal class UserCredentialRepository : DbRepository, IUserCredentialRepositor
     public async Task<ModelDtoWithId<UserDto>[]> GetUsersAsync(CancellationToken token)
     {
         await using var connection = await GetAndOpenConnection(token);
-        
+
         const string sqlQuery = "SELECT * FROM user_credential";
 
         var users = await connection.QueryAsync<UserDbo>(sqlQuery);
 
-        if (users is null)
-        {
-            throw new UsersNotFoundException();
-        }
+        if (users is null) throw new UsersNotFoundException();
         return users
             .Select(x => x.ToModelWithId())
             .ToArray();
@@ -117,17 +113,17 @@ internal class UserCredentialRepository : DbRepository, IUserCredentialRepositor
         await using var connection = await GetAndOpenConnection(token);
 
         await UserExceptionChecks.ThrowIfUserNotFoundAsync(id, connection);
-        
-        const string sqlQuery = $@"
+
+        const string sqlQuery = @"
         DELETE
         FROM user_credential
-        WHERE id = @Id";
+        WHERE user_info_id = @Id";
 
         var sqlParams = new
         {
             Id = id
         };
-        
+
         await connection.ExecuteAsync(sqlQuery, sqlParams);
     }
 }

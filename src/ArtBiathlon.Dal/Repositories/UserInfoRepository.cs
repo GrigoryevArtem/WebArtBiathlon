@@ -1,10 +1,9 @@
 using ArtBiathlon.Dal.ExceptionChecks.UserInfo;
-using ArtBiathlon.Domain.Entities;
-using ArtBiathlon.Domain.Interfaces.Dal;
-using ArtBiathlon.Domain.Models;
 using ArtBiathlon.Dal.Settings;
+using ArtBiathlon.Domain.Entities;
 using ArtBiathlon.Domain.Exceptions.UserInfo;
 using ArtBiathlon.Domain.Interfaces.Dal.UserInfo;
+using ArtBiathlon.Domain.Models;
 using ArtBiathlon.Domain.Models.User.UserInfo;
 using Dapper;
 using Microsoft.Extensions.Options;
@@ -16,9 +15,11 @@ internal class UserInfoRepository : DbRepository, IUserInfoRepository
     public UserInfoRepository(IOptions<DalOptions> dalSettings) : base(dalSettings.Value)
     {
     }
-    
+
     public async Task<long> CreateUserInfoAsync(UserInfoDto userInfoDto, CancellationToken token)
     {
+        await using var connection = await GetAndOpenConnection(token);
+
         const string sqlQuery = @$"
         INSERT INTO user_info(surname, name, middle_name, birth_date, gender, rank, status, email, user_avatar)
         VALUES ( @{nameof(UserInfoDto.Surname)},
@@ -32,18 +33,16 @@ internal class UserInfoRepository : DbRepository, IUserInfoRepository
                  @{nameof(UserInfoDto.UserAvatar)})
         RETURNING id";
 
-        await using var connection = await GetAndOpenConnection(token);
-
         return await connection.QueryFirstAsync<long>(sqlQuery, userInfoDto);
     }
-    
+
     public async Task UpdateUserInfoAsync(long id, UserInfoDto userInfo, CancellationToken token)
     {
         await using var connection = await GetAndOpenConnection(token);
-        
+
         await UserInfoExceptionChecks.ThrowIfUserNotExistsAsync(id, connection);
-        
-        const string sqlQuery = 
+
+        const string sqlQuery =
             @"
             UPDATE user_info 
             SET surname = @Surname, 
@@ -57,7 +56,7 @@ internal class UserInfoRepository : DbRepository, IUserInfoRepository
                 user_avatar = @UserAvatar
             WHERE id = @Id
             ";
-        
+
         var sqlParams = new
         {
             Id = id,
@@ -71,16 +70,17 @@ internal class UserInfoRepository : DbRepository, IUserInfoRepository
             userInfo.Email,
             userInfo.UserAvatar
         };
-        
+
         await connection.QueryAsync(sqlQuery, sqlParams);
     }
+
     public async Task<ModelDtoWithId<UserInfoDto>> GetUserInfoByIdAsync(long id, CancellationToken token)
     {
         await using var connection = await GetAndOpenConnection(token);
 
         await UserInfoExceptionChecks.ThrowIfUserNotExistsAsync(id, connection);
-        
-        const string sqlQuery = @$"
+
+        const string sqlQuery = @"
         SELECT * FROM user_info
             WHERE id = @Id";
 
@@ -88,22 +88,50 @@ internal class UserInfoRepository : DbRepository, IUserInfoRepository
         {
             Id = id
         };
-        
-        return await connection.QueryFirstAsync<ModelDtoWithId<UserInfoDto>>(sqlQuery, sqlParams);
+
+        var userInfo = await connection.QueryFirstAsync<UserInfoDbo>(sqlQuery, sqlParams);
+        return userInfo.ToModelWithId();
     }
 
     public async Task<ModelDtoWithId<UserInfoDto>[]> GetUsersInfoAsync(CancellationToken token)
     {
         await using var connection = await GetAndOpenConnection(token);
-        
+
         const string sqlQuery = "SELECT * FROM user_info";
 
         var usersInfo = await connection.QueryAsync<UserInfoDbo>(sqlQuery);
 
-        if (usersInfo is null)
-        {
-            throw new UsersInfoNotFoundException();
-        }
+        if (usersInfo is null) throw new UsersInfoNotFoundException();
+
+        return usersInfo
+            .Select(x => x.ToModelWithId())
+            .ToArray();
+    }
+
+    public async Task<ModelDtoWithId<UserInfoDto>[]> GetBiathletesAsync(CancellationToken token)
+    {
+        await using var connection = await GetAndOpenConnection(token);
+
+        const string sqlQuery = "SELECT * FROM user_info WHERE status = 0";
+
+        var usersInfo = await connection.QueryAsync<UserInfoDbo>(sqlQuery);
+
+        if (usersInfo is null) throw new UsersInfoNotFoundException();
+
+        return usersInfo
+            .Select(x => x.ToModelWithId())
+            .ToArray();
+    }
+
+    public async Task<ModelDtoWithId<UserInfoDto>[]> GetTrainersAsync(CancellationToken token)
+    {
+        await using var connection = await GetAndOpenConnection(token);
+
+        const string sqlQuery = "SELECT * FROM user_info WHERE status = 1";
+
+        var usersInfo = await connection.QueryAsync<UserInfoDbo>(sqlQuery);
+
+        if (usersInfo is null) throw new UsersInfoNotFoundException();
 
         return usersInfo
             .Select(x => x.ToModelWithId())
@@ -116,16 +144,16 @@ internal class UserInfoRepository : DbRepository, IUserInfoRepository
 
         await UserInfoExceptionChecks.ThrowIfUserNotExistsAsync(id, connection);
 
-        const string sqlQuery = $@"
+        const string sqlQuery = @"
         DELETE
         FROM user_info
         WHERE id = @Id";
-        
+
         var sqlParams = new
         {
             Id = id
         };
-        
+
         await connection.ExecuteAsync(sqlQuery, sqlParams);
     }
 }

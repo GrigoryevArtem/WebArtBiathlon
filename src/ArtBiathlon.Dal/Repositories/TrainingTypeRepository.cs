@@ -1,10 +1,9 @@
 using ArtBiathlon.Dal.ExceptionChecks.TrainingType;
-using ArtBiathlon.Domain.Entities;
-using ArtBiathlon.Domain.Interfaces.Dal;
-using ArtBiathlon.Domain.Models;
 using ArtBiathlon.Dal.Settings;
+using ArtBiathlon.Domain.Entities;
 using ArtBiathlon.Domain.Exceptions.TrainingType;
 using ArtBiathlon.Domain.Interfaces.Dal.TrianingType;
+using ArtBiathlon.Domain.Models;
 using ArtBiathlon.Domain.Models.TrainingType;
 using Dapper;
 using Microsoft.Extensions.Options;
@@ -22,7 +21,7 @@ internal class TrainingTypeRepository : DbRepository, ITrainingTypeRepository
         await using var connection = await GetAndOpenConnection(token);
 
         await TrainingTypeExceptionChecks.ThrowIfTrainingExistsAsync(trainingTypeDto.TypeName, connection);
-        
+
         const string sqlQuery = @$"
         INSERT INTO training_type (type_name)
         VALUES (@{nameof(TrainingTypeDto.TypeName)})
@@ -30,14 +29,14 @@ internal class TrainingTypeRepository : DbRepository, ITrainingTypeRepository
 
         return await connection.QueryFirstAsync<byte>(sqlQuery, trainingTypeDto);
     }
-    
+
     public async Task<ModelDtoWithId<TrainingTypeDto>> GetTrainingTypeByIdAsync(byte id, CancellationToken token)
     {
         await using var connection = await GetAndOpenConnection(token);
-        
+
         await TrainingTypeExceptionChecks.ThrowIfTrainingTypeNotFoundAsync(id, connection);
-        
-        const string sqlQuery = @$"
+
+        const string sqlQuery = @"
         SELECT * FROM training_type
             WHERE id = @Id";
 
@@ -54,15 +53,12 @@ internal class TrainingTypeRepository : DbRepository, ITrainingTypeRepository
     public async Task<ModelDtoWithId<TrainingTypeDto>[]> GetTrainingTypesAsync(CancellationToken token)
     {
         await using var connection = await GetAndOpenConnection(token);
-        
+
         const string sqlQuery = "SELECT * FROM training_type";
 
         var trainingTypes = await connection.QueryAsync<TrainingTypeDbo>(sqlQuery);
 
-        if (trainingTypes is null)
-        {
-            throw new TrainingTypesNotFoundException();
-        }
+        if (trainingTypes is null) throw new TrainingTypesNotFoundException();
 
         return trainingTypes
             .Select(x => x.ToModelWithId())
@@ -74,8 +70,8 @@ internal class TrainingTypeRepository : DbRepository, ITrainingTypeRepository
         await using var connection = await GetAndOpenConnection(token);
 
         await TrainingTypeExceptionChecks.ThrowIfTrainingTypeNotFoundAsync(id, connection);
-        
-        const string sqlQuery = $@"
+
+        const string sqlQuery = @"
         DELETE
         FROM training_type
         WHERE id = @Id";
@@ -94,7 +90,7 @@ internal class TrainingTypeRepository : DbRepository, ITrainingTypeRepository
 
         await TrainingTypeExceptionChecks.ThrowIfTrainingTypeNotFoundAsync(id, connection);
 
-        const string sqlQuery = $@"
+        const string sqlQuery = @"
         UPDATE training_type
         SET type_name = @TypeName
         WHERE id = @Id";
@@ -104,7 +100,7 @@ internal class TrainingTypeRepository : DbRepository, ITrainingTypeRepository
             Id = id,
             trainingTypeDto.TypeName
         };
-        
+
         await connection.QueryAsync(sqlQuery, sqlParams);
     }
 }
