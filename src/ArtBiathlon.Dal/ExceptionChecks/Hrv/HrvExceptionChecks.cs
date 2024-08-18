@@ -6,42 +6,36 @@ namespace ArtBiathlon.Dal.ExceptionChecks.Hrv;
 
 internal static class HrvExceptionChecks
 {
-    public static async Task ThrowIfHrvAlreadyExist(long biathleteId, DateTimeOffset createAt, IDbConnection connection)
+    public static async Task ThrowIfHrvAlreadyExist(long userInfoId, DateTimeOffset createAt, IDbConnection connection)
     {
-        var isHrvExists = await IsHrvExistsAsync(biathleteId, createAt, connection);
+        var isHrvExists = await IsHrvExistsAsync(userInfoId, createAt, connection);
 
-        if (isHrvExists)
-        {
-            throw new HrvIndicatorsAlreadyExistsForThisDateException();
-        }
+        if (isHrvExists) throw new HrvIndicatorsAlreadyExistsForThisDateException();
     }
 
     public static async Task ThrowIfHrvNotFoundAsync(long id, IDbConnection connection)
     {
         var isHrvExists = await IsHrvExistsAsync(id, connection);
 
-        if (!isHrvExists)
-        {
-            throw new HrvIndicatorsNotFoundException();
-        }
+        if (!isHrvExists) throw new HrvIndicatorsNotFoundException();
     }
 
     private static async Task<bool> IsHrvExistsAsync(
-        long biathleteId, DateTimeOffset createdAt, IDbConnection connection)
+        long userInfoId, DateTimeOffset createdAt, IDbConnection connection)
     {
-        const string sqlQuery = @$"
+        const string sqlQuery = @"
             SELECT EXISTS(
                 SELECT 1
                 FROM hrv_indicator
-                WHERE biathlete_id = @BiathleteId 
+                WHERE user_info_id = @UserInfoId 
                 AND created_at = @CreatedAt)";
 
         var sqlParams = new
         {
-            BiathleteId = biathleteId,
+            UserInfoId = userInfoId,
             CreatedAt = createdAt
         };
-        
+
         var exists = await connection.QuerySingleAsync<bool>(
             sqlQuery,
             sqlParams);
@@ -51,7 +45,7 @@ internal static class HrvExceptionChecks
 
     private static async Task<bool> IsHrvExistsAsync(long id, IDbConnection connection)
     {
-        const string sqlQuery = @$"
+        const string sqlQuery = @"
             SELECT EXISTS(
                 SELECT 1
                 FROM hrv_indicator
@@ -61,7 +55,7 @@ internal static class HrvExceptionChecks
         {
             Id = id
         };
-        
+
         var exists = await connection.QuerySingleAsync<bool>(
             sqlQuery,
             sqlParams);

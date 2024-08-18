@@ -2,13 +2,14 @@ using System.Runtime.Serialization;
 
 namespace ArtBiathlon.Domain.Exceptions.TrainingSchedule;
 
-public class TrainingScheduleAlreadyExistsException : Exception
+public class TrainingScheduleAlreadyExistsException : AlreadyExistException
 {
     public TrainingScheduleAlreadyExistsException() : base("Training schedule already exists")
     {
     }
 
-    protected TrainingScheduleAlreadyExistsException(SerializationInfo info, StreamingContext context) : base(info, context)
+    protected TrainingScheduleAlreadyExistsException(SerializationInfo info, StreamingContext context) : base(info,
+        context)
     {
     }
 
@@ -16,7 +17,8 @@ public class TrainingScheduleAlreadyExistsException : Exception
     {
     }
 
-    public TrainingScheduleAlreadyExistsException(string? message, Exception? innerException) : base(message, innerException)
+    public TrainingScheduleAlreadyExistsException(string? message, Exception? innerException) : base(message,
+        innerException)
     {
     }
 }

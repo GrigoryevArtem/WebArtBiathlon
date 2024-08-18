@@ -11,56 +11,41 @@ internal static class UserInfoExceptionChecks
     {
         var isUserExists = await IsUserInfoExistsAsync(id, connection);
 
-        if (isUserExists)
-        {
-            throw new UserInfoAlreadyExistsException();
-        }
+        if (isUserExists) throw new UserInfoAlreadyExistsException();
     }
 
     public static async Task ThrowIfUserNotExistsAsync(long id, IDbConnection connection)
     {
         var isUserExists = await IsUserInfoExistsAsync(id, connection);
 
-        if (!isUserExists)
-        {
-            throw new UserInfoNotFoundException();
-        }
+        if (!isUserExists) throw new UserInfoNotFoundException();
     }
 
     public static async Task ThrowIfEmailAlreadyExistsAsync(string email, IDbConnection connection)
     {
         var exists = await IsEmailExistsAsync(email, connection);
 
-        if (exists)
-        {
-            throw new EmailAlreadyExistsException();
-        }
+        if (exists) throw new EmailAlreadyExistsException();
     }
 
     public static async Task ThrowIfUserNotFoundByEmailAsync(string email, IDbConnection connection)
     {
         var exists = await IsUserExistsByEmailAsync(email, connection);
 
-        if (!exists)
-        {
-            throw new UserNotFoundException();
-        }
+        if (!exists) throw new UserNotFoundException();
     }
 
     public static async Task ThrowIfEmailNotFoundAsync(string email, IDbConnection connection)
     {
         var exists = await IsEmailExistsAsync(email, connection);
 
-        if (!exists)
-        {
-            throw new EmailNotConfirmedException();
-        }
+        if (!exists) throw new EmailNotConfirmedException();
     }
 
 
     private static async Task<bool> IsUserInfoExistsAsync(long id, IDbConnection connection)
     {
-        const string sqlQuery = @$"
+        const string sqlQuery = @"
             SELECT EXISTS(
                 SELECT 1
                 FROM user_info

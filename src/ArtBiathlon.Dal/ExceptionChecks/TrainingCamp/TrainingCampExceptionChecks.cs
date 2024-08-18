@@ -10,25 +10,50 @@ internal static class TrainingCampExceptionChecks
     {
         var isTrainingsCampExists = await IsTrainingCampExistsAsync(id, connection);
 
-        if (isTrainingsCampExists)
-        {
-            throw new TrainingsCampNotFoundException();
-        }
+        if (isTrainingsCampExists) throw new TrainingsCampNotFoundException();
+    }
+
+    public static async Task ThrowIfTrainingCampExistsAsync(DateTimeOffset startDate, DateTimeOffset endDate,
+        IDbConnection connection)
+    {
+        var isTrainingsCampExists = await IsTrainingCampExistsAsync(startDate, endDate, connection);
+
+        if (isTrainingsCampExists) throw new TrainingsCampNotFoundException();
     }
 
     public static async Task ThrowIfTrainingCampNotExistsAsync(long id, IDbConnection connection)
     {
         var isTrainingsCampExists = await IsTrainingCampExistsAsync(id, connection);
 
-        if (!isTrainingsCampExists)
+        if (!isTrainingsCampExists) throw new TrainingsCampNotFoundException();
+    }
+
+    private static async Task<bool> IsTrainingCampExistsAsync(DateTimeOffset startDate, DateTimeOffset endDate,
+        IDbConnection connection)
+    {
+        const string sqlQuery = @"
+        SELECT EXISTS(
+            SELECT 1
+            FROM training_camp
+            WHERE 
+                (camp_start <= @EndDate AND camp_end >= @StartDate) OR
+                (camp_start <= @StartDate AND camp_end >= @EndDate)
+        )";
+
+        var sqlParams = new
         {
-            throw new TrainingsCampNotFoundException();
-        }
+            StartDate = startDate,
+            EndDate = endDate
+        };
+
+        var exists = await connection.QuerySingleAsync<bool>(sqlQuery, sqlParams);
+
+        return exists;
     }
 
     private static async Task<bool> IsTrainingCampExistsAsync(long id, IDbConnection connection)
     {
-        const string sqlQuery = @$"
+        const string sqlQuery = @"
             SELECT EXISTS(
                 SELECT 1
                 FROM training_camp
@@ -38,7 +63,7 @@ internal static class TrainingCampExceptionChecks
         {
             Id = id
         };
-        
+
         var exists = await connection.QuerySingleAsync<bool>(
             sqlQuery,
             sqlParams);

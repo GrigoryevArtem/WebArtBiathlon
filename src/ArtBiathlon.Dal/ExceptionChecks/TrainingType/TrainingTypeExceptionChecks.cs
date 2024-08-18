@@ -10,45 +10,33 @@ internal static class TrainingTypeExceptionChecks
     {
         var isTrainingTypeExists = await IsTrainingTypeExistsAsync(typeName, connection);
 
-        if (isTrainingTypeExists)
-        {
-            throw new TrainingTypeAlreadyExistsException();
-        }
+        if (isTrainingTypeExists) throw new TrainingTypeAlreadyExistsException();
     }
 
     public static async Task ThrowIfTrainingTypeNotFoundAsync(string typeName, IDbConnection connection)
     {
         var isTrainingTypeExists = await IsTrainingTypeExistsAsync(typeName, connection);
 
-        if (!isTrainingTypeExists)
-        {
-            throw new TrainingTypeNotFoundException();
-        }
+        if (!isTrainingTypeExists) throw new TrainingTypeNotFoundException();
     }
 
     public static async Task ThrowIfTrainingTypeNotFoundAsync(byte id, IDbConnection connection)
     {
         var isTrainingTypeExists = await IsTrainingTypeExistsAsync(id, connection);
 
-        if (!isTrainingTypeExists)
-        {
-            throw new TrainingTypeNotFoundException();
-        }
+        if (!isTrainingTypeExists) throw new TrainingTypeNotFoundException();
     }
-    
+
     public static async Task ThrowIfTrainingExistsAsync(byte id, IDbConnection connection)
     {
         var isTrainingTypeExists = await IsTrainingTypeExistsAsync(id, connection);
 
-        if (isTrainingTypeExists)
-        {
-            throw new TrainingTypeAlreadyExistsException();
-        }
+        if (isTrainingTypeExists) throw new TrainingTypeAlreadyExistsException();
     }
 
     private static async Task<bool> IsTrainingTypeExistsAsync(string typeName, IDbConnection connection)
     {
-        const string sqlQuery = @$"
+        const string sqlQuery = @"
             SELECT EXISTS(
                 SELECT 1
                 FROM training_type
@@ -58,7 +46,7 @@ internal static class TrainingTypeExceptionChecks
         {
             TypeName = typeName
         };
-        
+
         var exists = await connection.QuerySingleAsync<bool>(
             sqlQuery,
             sqlParams);
@@ -68,7 +56,7 @@ internal static class TrainingTypeExceptionChecks
 
     private static async Task<bool> IsTrainingTypeExistsAsync(byte id, IDbConnection connection)
     {
-        const string sqlQuery = @$"
+        const string sqlQuery = @"
             SELECT EXISTS(
                 SELECT 1
                 FROM training_type
@@ -78,7 +66,7 @@ internal static class TrainingTypeExceptionChecks
         {
             Id = id
         };
-        
+
         var exists = await connection.QuerySingleAsync<bool>(
             sqlQuery,
             sqlParams);
