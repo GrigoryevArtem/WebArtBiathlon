@@ -8,10 +8,10 @@ public class AddUserCredentialTable: Migration {
     {
         Execute.Sql($@"
             CREATE TABLE IF NOT EXISTS user_credential (
-                id              serial          not null,
+                user_info_id    serial          not null,
                 login           varchar(20)     not null,
                 password        bytea           not null, 
-            PRIMARY KEY (id));   
+            PRIMARY KEY (user_info_id));   
         ");
     }
 
