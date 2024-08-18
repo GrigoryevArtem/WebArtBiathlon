@@ -10,7 +10,7 @@ public class TrainingsCampDtoValidator : AbstractValidator<TrainingsCampDto>
         RuleFor(x => x.CampStart)
             .NotNull()
             .LessThan(x => x.CampEnd);
-        
+
         RuleFor(x => x.CampEnd)
             .NotNull()
             .GreaterThan(x => x.CampStart);

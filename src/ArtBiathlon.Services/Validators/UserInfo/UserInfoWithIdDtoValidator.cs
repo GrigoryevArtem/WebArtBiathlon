@@ -9,10 +9,9 @@ public class UserInfoWithIdDtoValidator : AbstractValidator<ModelDtoWithId<UserI
     public UserInfoWithIdDtoValidator()
     {
         RuleFor(x => x.Id)
-            .GreaterThanOrEqualTo(0);
-        
+            .NotEmpty();
+
         RuleFor(x => x.Model)
             .SetValidator(new UserInfoDtoValidator());
     }
-    
 }

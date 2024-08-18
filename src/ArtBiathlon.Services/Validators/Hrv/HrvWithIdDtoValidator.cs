@@ -9,10 +9,9 @@ public class HrvWithIdDtoValidator : AbstractValidator<ModelDtoWithId<HrvDto>>
     public HrvWithIdDtoValidator()
     {
         RuleFor(x => x.Id)
-            .GreaterThanOrEqualTo(0);
-        
+            .GreaterThan(0);
+
         RuleFor(x => x.Model)
             .SetValidator(new HrvDtoValidator());
     }
-    
 }

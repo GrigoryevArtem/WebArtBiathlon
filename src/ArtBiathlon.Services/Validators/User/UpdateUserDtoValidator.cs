@@ -1,11 +1,11 @@
-using ArtBiathlon.Domain.Models.User.UserSign;
+using ArtBiathlon.Domain.Models.User.UserCredential;
 using FluentValidation;
 
 namespace ArtBiathlon.Services.Validators.User;
 
-public class SignInDtoValidator : AbstractValidator<SignInDto>
+public class UpdateUserDtoValidator : AbstractValidator<UpdateUserDto>
 {
-    public SignInDtoValidator()
+    public UpdateUserDtoValidator()
     {
         RuleFor(x => x.Login)
             .NotNull()

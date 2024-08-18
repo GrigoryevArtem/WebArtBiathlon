@@ -10,7 +10,7 @@ public class TrainingDtoValidator : AbstractValidator<TrainingDto>
         RuleFor(x => x.TrainingName.Length)
             .NotNull()
             .LessThanOrEqualTo(100);
-        
+
         RuleFor(x => x.TrainingTypeId)
             .NotNull()
             .GreaterThan((byte)0);

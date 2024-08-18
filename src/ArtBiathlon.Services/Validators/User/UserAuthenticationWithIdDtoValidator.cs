@@ -9,7 +9,7 @@ public class UserAuthenticationWithIdDtoValidator : AbstractValidator<ModelDtoWi
     public UserAuthenticationWithIdDtoValidator()
     {
         RuleFor(x => x.Id)
-            .GreaterThanOrEqualTo(0);
+            .NotEmpty();
 
         RuleFor(x => x.Model)
             .SetValidator(new UserAuthenticationDtoValidator());

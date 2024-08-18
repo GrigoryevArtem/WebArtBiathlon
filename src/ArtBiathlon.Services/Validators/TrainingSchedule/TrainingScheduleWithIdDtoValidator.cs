@@ -9,10 +9,9 @@ public class TrainingScheduleWithIdDtoValidator : AbstractValidator<ModelDtoWith
     public TrainingScheduleWithIdDtoValidator()
     {
         RuleFor(x => x.Id)
-            .GreaterThanOrEqualTo(0);
-        
+            .NotEmpty();
+
         RuleFor(x => x.Model)
             .SetValidator(new TrainingScheduleDtoValidator());
     }
-    
 }

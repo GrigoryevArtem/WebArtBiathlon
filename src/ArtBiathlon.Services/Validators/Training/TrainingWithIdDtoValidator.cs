@@ -9,10 +9,9 @@ public class TrainingWithIdDtoValidator : AbstractValidator<ModelDtoWithId<Train
     public TrainingWithIdDtoValidator()
     {
         RuleFor(x => x.Id)
-            .GreaterThanOrEqualTo(0);
-        
+            .NotEmpty();
+
         RuleFor(x => x.Model)
             .SetValidator(new TrainingDtoValidator());
     }
-    
 }
