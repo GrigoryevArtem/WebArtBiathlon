@@ -1,0 +1,12 @@
+version: "3"
+services:
+  price-calculator-local:
+    image: postgres
+    restart: always
+    container_name: art-biathlon
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "art-biathlon"
+      POSTGRES_PASSWORD: "123456"
+    ports:
+      - 15432:5432

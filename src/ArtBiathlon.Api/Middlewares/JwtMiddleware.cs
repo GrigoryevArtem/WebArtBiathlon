@@ -13,10 +13,7 @@ public class JwtMiddleware
     {
         var token = context.Request.Cookies["jwt"];
 
-        if (!string.IsNullOrEmpty(token))
-        {
-            context.Request.Headers.Add("Authorization", "Bearer " + token);
-        }
+        if (!string.IsNullOrEmpty(token)) context.Request.Headers.Append("Authorization", "Bearer " + token);
 
         await _next(context);
     }

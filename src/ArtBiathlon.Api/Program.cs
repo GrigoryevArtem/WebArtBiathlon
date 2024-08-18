@@ -1,11 +1,14 @@
+using System.Net;
 using System.Text;
+using ArtBiathlon.Api.ActionFilters;
 using ArtBiathlon.Api.NamingPolicies;
 using ArtBiathlon.Dal.Extensions;
 using ArtBiathlon.Services.Extensions;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-
 
 var myAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -14,33 +17,31 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 var services = builder.Services;
-services.AddControllers()
-    .AddJsonOptions(options =>
+
+services
+    .AddControllers(opt =>
     {
-        options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
-    });
+        opt.Filters.Add(new ExceptionFilterAttribute());
+        opt.Filters.Add(new ProducesResponseTypeAttribute((int)HttpStatusCode.InternalServerError));
+        opt.Filters.Add(new ProducesResponseTypeAttribute((int)HttpStatusCode.BadRequest));
+        opt.Filters.Add(new ProducesResponseTypeAttribute((int)HttpStatusCode.OK));
+    })
+    .AddJsonOptions(options => { options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy(); });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-services.AddSwaggerGen(o =>
-{
-    o.CustomSchemaIds(x => x.FullName);
-});
+services.AddSwaggerGen(o => { o.CustomSchemaIds(x => x.FullName); });
 
 services
     .AddDalInfrastructure(builder.Configuration)
     .AddDalRepositories()
     .AddServiceCollection();
 
-//add validation
-services.AddFluentValidation(conf =>
-{
-    conf.RegisterValidatorsFromAssembly(typeof(Program).Assembly);
-    conf.AutomaticValidationEnabled = true;
-});
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: myAllowSpecificOrigins,
+    options.AddPolicy(myAllowSpecificOrigins,
         policy =>
         {
             policy.AllowAnyOrigin()
@@ -49,7 +50,6 @@ builder.Services.AddCors(options =>
                 .WithOrigins("http://localhost:3000");
         });
 });
-
 
 builder.Services
     .AddAuthentication(options =>
@@ -72,7 +72,6 @@ builder.Services
                 Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:Key").Value!))
         };
     });
-
 
 var app = builder.Build();
 
