@@ -5,10 +5,6 @@ namespace ArtBiathlon.Domain.Entities;
 
 public record TrainingCampDbo
 {
-    public long Id { get; init; }
-    public DateTimeOffset CampStart { get; init; }
-    public DateTimeOffset CampEnd { get; init; }
-
     public TrainingCampDbo()
     {
     }
@@ -19,6 +15,10 @@ public record TrainingCampDbo
         CampStart = campStart;
         CampEnd = campEnd;
     }
+
+    public long Id { get; init; }
+    public DateTimeOffset CampStart { get; init; }
+    public DateTimeOffset CampEnd { get; init; }
 
     public ModelDtoWithId<TrainingsCampDto> ToModelWithId()
     {

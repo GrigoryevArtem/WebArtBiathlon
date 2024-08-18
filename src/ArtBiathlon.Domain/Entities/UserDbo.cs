@@ -5,20 +5,20 @@ namespace ArtBiathlon.Domain.Entities;
 
 public record UserDbo
 {
-    public long Id { get; init; }
-    public string Login { get; init; }
-    public byte[] Password { get; init; }
-
     public UserDbo()
     {
     }
-    
-    public UserDbo(long id, string login, byte[] password)
+
+    public UserDbo(long userInfoId, string login, byte[] password)
     {
-        Id = id;
+        UserInfoId = userInfoId;
         Login = login;
         Password = password;
     }
+
+    public long UserInfoId { get; init; }
+    public string Login { get; init; }
+    public byte[] Password { get; init; }
 
     public ModelDtoWithId<UserDto> ToModelWithId()
     {
@@ -27,7 +27,7 @@ public record UserDbo
             Password);
 
         return new ModelDtoWithId<UserDto>(
-            Id,
+            UserInfoId,
             userModel);
     }
 }

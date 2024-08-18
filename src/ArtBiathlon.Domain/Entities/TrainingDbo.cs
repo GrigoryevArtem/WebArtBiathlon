@@ -5,10 +5,6 @@ namespace ArtBiathlon.Domain.Entities;
 
 public record TrainingDbo
 {
-    public long Id { get; init; }
-    public string TrainingName { get; init; }
-    public byte TrainingTypeId { get; init; }
-    
     public TrainingDbo()
     {
     }
@@ -19,6 +15,10 @@ public record TrainingDbo
         TrainingName = trainingName;
         TrainingTypeId = trainingTypeId;
     }
+
+    public long Id { get; init; }
+    public string TrainingName { get; init; }
+    public byte TrainingTypeId { get; init; }
 
     public ModelDtoWithId<TrainingDto> ToModelWithId()
     {
