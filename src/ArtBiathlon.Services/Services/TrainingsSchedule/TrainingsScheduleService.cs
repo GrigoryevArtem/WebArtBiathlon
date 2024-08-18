@@ -1,5 +1,3 @@
-using ArtBiathlon.Domain.Exceptions.Infrastructure;
-using ArtBiathlon.Domain.Exceptions.TrainingSchedule;
 using ArtBiathlon.Domain.Interfaces.Dal.TrainingsSchedule;
 using ArtBiathlon.Domain.Interfaces.Services.TrainingsSchedule;
 using ArtBiathlon.Domain.Models;
@@ -23,83 +21,42 @@ internal class TrainingsScheduleService : ITrainingsScheduleService
     public async Task<long> CreateTrainingsScheduleAsync(TrainingsScheduleDto trainingsScheduleDto,
         CancellationToken token)
     {
-        try
-        {
-            await _validator.ValidateAndThrowAsync(
-                trainingsScheduleDto,
-                cancellationToken: token);
-
-            return await _trainingsScheduleRepository.CreateTrainingsScheduleAsync(trainingsScheduleDto, token);
-        }
-        catch (TrainingScheduleAlreadyExistsException ex)
-        {
-            throw new DomainException(ex.Message);
-        }
+        await _validator.ValidateAndThrowAsync(trainingsScheduleDto, token);
+        return await _trainingsScheduleRepository.CreateTrainingsScheduleAsync(trainingsScheduleDto, token);
     }
 
     public async Task<ModelDtoWithId<TrainingsScheduleDto>> GetTrainingsScheduleAsync(long id,
         CancellationToken token)
     {
-        try
-        {
-            return await _trainingsScheduleRepository.GetTrainingsScheduleAsync(id, token);
-        }
-        catch (TrainingScheduleNotFoundException ex)
-        {
-            throw new DomainException(ex.Message);
-        }
+        return await _trainingsScheduleRepository.GetTrainingsScheduleAsync(id, token);
     }
 
-    public async Task<ModelDtoWithId<TrainingsScheduleDto>> GetTrainingsScheduleAsync(DateTimeOffset startDate, CancellationToken token)
+    public async Task<ModelDtoWithId<TrainingsScheduleDto>> GetTrainingsScheduleAsync(DateTimeOffset startDate,
+        CancellationToken token)
     {
-        try
-        {
-            return await _trainingsScheduleRepository.GetTrainingsScheduleAsync(startDate, token);
-        }
-        catch (TrainingSchedulesNotFoundForThisDateException ex)
-        {
-            throw new DomainException(ex.Message);
-        }
+        return await _trainingsScheduleRepository.GetTrainingsScheduleAsync(startDate, token);
+    }
+
+    public async Task<ModelDtoWithId<TrainingsScheduleDisplayDto>[]> GetTrainingsSchedulesDisplayAsync(
+        CancellationToken token)
+    {
+        return await _trainingsScheduleRepository.GetTrainingsSchedulesDisplayAsync(token);
     }
 
     public async Task<ModelDtoWithId<TrainingsScheduleDto>[]> GetTrainingsSchedulesAsync(CancellationToken token)
     {
-        try
-        {
-            return await _trainingsScheduleRepository.GetTrainingsSchedulesAsync(token);
-        }
-        catch (Exception ex) //todo: заглушка, чекни репу
-        {
-            throw new DomainException(ex.Message);
-        }
+        return await _trainingsScheduleRepository.GetTrainingsSchedulesAsync(token);
     }
 
     public async Task DeleteTrainingsScheduleAsync(long id, CancellationToken token)
     {
-        try
-        {
-            await _trainingsScheduleRepository.DeleteTrainingsScheduleAsync(id, token);
-        }
-        catch (TrainingScheduleNotFoundException ex)
-        {
-            throw new DomainException(ex.Message);
-        }
+        await _trainingsScheduleRepository.DeleteTrainingsScheduleAsync(id, token);
     }
 
     public async Task UpdateTrainingScheduleAsync(long id, TrainingsScheduleDto trainingsScheduleDto,
         CancellationToken token)
     {
-        try
-        {
-            await _validator.ValidateAndThrowAsync(
-                trainingsScheduleDto,
-                cancellationToken: token);
-
-            await _trainingsScheduleRepository.UpdateTrainingScheduleAsync(id, trainingsScheduleDto, token);
-        }
-        catch (TrainingScheduleNotFoundException ex)
-        {
-            throw new DomainException(ex.Message);
-        }
+        await _validator.ValidateAndThrowAsync(trainingsScheduleDto, token);
+        await _trainingsScheduleRepository.UpdateTrainingScheduleAsync(id, trainingsScheduleDto, token);
     }
 }

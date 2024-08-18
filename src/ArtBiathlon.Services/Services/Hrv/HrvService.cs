@@ -1,88 +1,63 @@
-using ArtBiathlon.Domain.Exceptions.Hrv;
-using ArtBiathlon.Domain.Exceptions.Infrastructure;
+using ArtBiathlon.Domain.Enums;
 using ArtBiathlon.Domain.Interfaces.Dal.Hrv;
 using ArtBiathlon.Domain.Interfaces.Services.Hrv;
+using ArtBiathlon.Domain.Models;
 using ArtBiathlon.Domain.Models.Hrv;
+using ArtBiathlon.Services.Services.Hrv.HrvsFactory;
 using FluentValidation;
 
 namespace ArtBiathlon.Services.Services.Hrv;
 
 public class HrvService : IHrvService
 {
+    private readonly HrvsDayTypeFactory _hrvDayTypeFactory;
     private readonly IHrvRepository _hrvRepository;
     private readonly IValidator<HrvDto> _validator;
 
-    public HrvService(IHrvRepository hrvRepository, IValidator<HrvDto> validator)
+    public HrvService(IHrvRepository hrvRepository, IValidator<HrvDto> validator, HrvsDayTypeFactory hrvDayTypeFactory)
     {
         _hrvRepository = hrvRepository;
         _validator = validator;
+        _hrvDayTypeFactory = hrvDayTypeFactory;
     }
 
     public async Task<long> CreateHrvAsync(HrvDto hrvDto, CancellationToken token)
     {
-        try
-        {
-            await _validator.ValidateAndThrowAsync(
-                hrvDto,
-                cancellationToken: token);
-
-            return await _hrvRepository.CreateHrvAsync(hrvDto, token);
-        }
-        catch (HrvIndicatorsAlreadyExistsForThisDateException ex)
-        {
-            throw new DomainException(ex.Message);
-        }
+        await _validator.ValidateAndThrowAsync(hrvDto, token);
+        return await _hrvRepository.CreateHrvAsync(hrvDto, token);
     }
 
-    public async Task<HrvDto> GetHrvByIdAsync(long id, CancellationToken token)
+    public async Task<ModelDtoWithId<HrvDto>> GetHrvByIdAsync(long id, CancellationToken token)
     {
-        try
-        {
-            return await _hrvRepository.GetHrvByIdAsync(id, token);
-        }
-        catch (HrvIndicatorsNotFoundException ex)
-        {
-            throw new DomainException(ex.Message);
-        }
+        return await _hrvRepository.GetHrvByIdAsync(id, token);
     }
 
-    public async Task<HrvDto[]> GetHrvsAsync(CancellationToken token)
+    public async Task<ModelDtoWithId<HrvDto>[]> GetHrvsAsync(CancellationToken token)
     {
-        try
-        {
-            return await _hrvRepository.GetHrvsAsync(token);
-        }
-        catch (HrvIndicatorsNotFoundInThisTimeException ex)
-        {
-            throw new DomainException(ex.Message);
-        }
+        return await _hrvRepository.GetHrvsAsync(token);
     }
+
+    public async Task<ModelDtoWithId<HrvDto>[]> GetHrvsAsync(int[] biathleteIds, int[] campIds, CancellationToken token)
+    {
+        return await _hrvRepository.GetHrvsAsync(biathleteIds, campIds, token);
+    }
+
+    public async Task<ModelDtoWithId<HrvDto>[]> GetHrvsAsync(int[] biathleteIds, int[] campIds, DayType dayType,
+        CancellationToken token)
+    {
+        var strategy = _hrvDayTypeFactory.GetHrvs(dayType);
+        return await strategy.GetHrvsAsync(biathleteIds, campIds, token);
+    }
+
 
     public async Task DeleteHrvAsync(long id, CancellationToken token)
     {
-        try
-        {
-            await _hrvRepository.DeleteHrvAsync(id, token);
-        }
-        catch (HrvIndicatorsNotFoundException ex)
-        {
-            throw new DomainException(ex.Message);
-        }
+        await _hrvRepository.DeleteHrvAsync(id, token);
     }
 
     public async Task UpdateHrvAsync(long id, HrvDto hrvDto, CancellationToken token)
     {
-        try
-        {
-            await _validator.ValidateAndThrowAsync(
-                hrvDto,
-                cancellationToken: token);
-
-            await _hrvRepository.UpdateHrvAsync(id, hrvDto, token);
-        }
-        catch (HrvIndicatorsNotFoundException ex)
-        {
-            throw new DomainException(ex.Message);
-        }
+        await _validator.ValidateAndThrowAsync(hrvDto, token);
+        await _hrvRepository.UpdateHrvAsync(id, hrvDto, token);
     }
 }

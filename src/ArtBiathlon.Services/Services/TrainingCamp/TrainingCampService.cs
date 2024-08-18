@@ -1,80 +1,46 @@
-using ArtBiathlon.Domain.Exceptions.Infrastructure;
-using ArtBiathlon.Domain.Exceptions.TrainingsCamp;
-using ArtBiathlon.Domain.Interfaces.Dal;
 using ArtBiathlon.Domain.Interfaces.Dal.TrainingCamp;
 using ArtBiathlon.Domain.Interfaces.Services.TrainingCamp;
 using ArtBiathlon.Domain.Models;
 using ArtBiathlon.Domain.Models.TrainingsCamp;
+using FluentValidation;
 
 namespace ArtBiathlon.Services.Services.TrainingCamp;
 
 internal class TrainingCampService : ITrainingCampService
 {
     private readonly ITrainingCampRepository _trainingCampRepository;
+    private readonly IValidator<TrainingsCampDto> _validator;
 
-    public TrainingCampService(ITrainingCampRepository trainingCampRepository)
+    public TrainingCampService(ITrainingCampRepository trainingCampRepository, IValidator<TrainingsCampDto> validator)
     {
         _trainingCampRepository = trainingCampRepository;
+        _validator = validator;
     }
 
-    public async Task<long> CreateTrainingCampAsync(TrainingsCampDto trainingCampDto, CancellationToken token)
+    public async Task<long> CreateTrainingCampAsync(TrainingsCampDto trainingsCampDto, CancellationToken token)
     {
-        try
-        {
-            return await _trainingCampRepository.CreateTrainingCampAsync(trainingCampDto, token);
-        }
-        catch (Exception
-               ex) //todo: заглушка, тут должно быть исключение по типу "В данный интервал времени уже запланирован тренировочный лагерь"
-        {
-            throw new Exception(ex.Message);
-        }
+        await _validator.ValidateAndThrowAsync(trainingsCampDto, token);
+        return await _trainingCampRepository.CreateTrainingCampAsync(trainingsCampDto, token);
     }
 
     public async Task<ModelDtoWithId<TrainingsCampDto>> GetTrainingCampByIdAsync(long id, CancellationToken token)
     {
-        try
-        {
-            return await _trainingCampRepository.GetTrainingCampByIdAsync(id, token);
-        }
-        catch (TrainingsCampNotFoundException ex)
-        {
-            throw new DomainException(ex.Message);
-        }
+        return await _trainingCampRepository.GetTrainingCampByIdAsync(id, token);
     }
 
     public async Task<ModelDtoWithId<TrainingsCampDto>[]> GetTrainingCampsAsync(CancellationToken token)
     {
-        try
-        {
-            return await _trainingCampRepository.GetTrainingCampsAsync(token);
-        }
-        catch (TrainingsCampsNotFoundException ex)
-        {
-            throw new DomainException(ex.Message);
-        }
+        return await _trainingCampRepository.GetTrainingCampsAsync(token);
     }
 
     public async Task DeleteTrainingCampAsync(long id, CancellationToken token)
     {
-        try
-        {
-            await _trainingCampRepository.DeleteTrainingCampAsync(id, token);
-        }
-        catch (TrainingsCampNotFoundException ex)
-        {
-            throw new DomainException(ex.Message);
-        }
+        await _trainingCampRepository.DeleteTrainingCampAsync(id, token);
     }
 
     public async Task UpdateTrainingCampAsync(long id, TrainingsCampDto trainingsCampDto, CancellationToken token)
     {
-        try
-        {
-            await _trainingCampRepository.UpdateTrainingCampAsync(id, trainingsCampDto, token);
-        }
-        catch (TrainingsCampNotFoundException ex)
-        {
-            throw new DomainException(ex.Message);
-        }
+        await _validator.ValidateAndThrowAsync(trainingsCampDto, token);
+        await _trainingCampRepository.UpdateTrainingCampAsync(id, trainingsCampDto, token);
     }
 }

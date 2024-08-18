@@ -1,4 +1,3 @@
-using ArtBiathlon.Domain.Interfaces.Dal;
 using ArtBiathlon.Dal.Infrastructure;
 using ArtBiathlon.Dal.Repositories;
 using ArtBiathlon.Dal.Settings;
@@ -19,18 +18,18 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddDalRepositories(
         this IServiceCollection services)
     {
-      services.AddScoped<IHrvRepository, HrvRepository>();
-      services.AddScoped<IUserCredentialRepository, UserCredentialRepository>();
-      services.AddScoped<ITrainingCampRepository, TrainingCampRepository>();
-      services.AddScoped<IUserInfoRepository, UserInfoRepository>();
-      services.AddScoped<ITrainingsScheduleRepository, TrainingsScheduleRepository>();
-      services.AddScoped<ITrainingRepository, TrainingRepository>();
-      services.AddScoped<ITrainingTypeRepository, TrainingTypeRepository>();
-      return services;
+        services.AddScoped<IHrvRepository, HrvRepository>();
+        services.AddScoped<IUserCredentialRepository, UserCredentialRepository>();
+        services.AddScoped<ITrainingCampRepository, TrainingCampRepository>();
+        services.AddScoped<IUserInfoRepository, UserInfoRepository>();
+        services.AddScoped<ITrainingsScheduleRepository, TrainingsScheduleRepository>();
+        services.AddScoped<ITrainingRepository, TrainingRepository>();
+        services.AddScoped<ITrainingTypeRepository, TrainingTypeRepository>();
+        return services;
     }
-    
+
     public static IServiceCollection AddDalInfrastructure(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         IConfigurationRoot config)
     {
         //read config
@@ -38,10 +37,10 @@ public static class ServiceCollectionExtensions
 
         //configure postrges types
         Postgres.MapCompositeTypes();
-        
+
         //add migrations
         Postgres.AddMigrations(services);
-        
+
         return services;
     }
 }

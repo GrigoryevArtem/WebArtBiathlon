@@ -1,33 +1,38 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Emgu.CV" Version="4.8.0.5324" />
-    <PackageReference Include="Emgu.CV.runtime.mini.macos" Version="4.8.0.5324" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.15" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.4" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Emgu.CV" Version="4.8.0.5324"/>
+        <PackageReference Include="Emgu.CV.runtime.mini.macos" Version="4.8.0.5324"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.15"/>
+        <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.4"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+    <ItemGroup>
+        <Content Update="appsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ArtBiathlon.Domain\ArtBiathlon.Domain.csproj" />
-    <ProjectReference Include="..\ArtBiathlon.Dal\ArtBiathlon.Dal.csproj" />
-    <ProjectReference Include="..\ArtBiathlon.Services\ArtBiathlon.Services.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\ArtBiathlon.Domain\ArtBiathlon.Domain.csproj"/>
+        <ProjectReference Include="..\ArtBiathlon.Dal\ArtBiathlon.Dal.csproj"/>
+        <ProjectReference Include="..\ArtBiathlon.Services\ArtBiathlon.Services.csproj"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Images\" />
-    <Folder Include="Requests\V1\" />
-  </ItemGroup>
-  
+    <ItemGroup>
+        <Folder Include="Images\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Images\hrv indicators 19.11.20242024-05-29 17:32:07.jpg"/>
+    </ItemGroup>
+
 </Project>

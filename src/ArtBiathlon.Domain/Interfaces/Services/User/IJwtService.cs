@@ -5,5 +5,5 @@ namespace ArtBiathlon.Domain.Interfaces.Services.User;
 
 public interface IJwtService
 {
-    string GenerateToken(ModelDtoWithId<UserAuthenticationDto> userModelWithId);
+    Task<string> GenerateToken(ModelDtoWithId<UserAuthenticationDto> userModelWithId, CancellationToken token);
 }

@@ -1,5 +1,3 @@
-using ArtBiathlon.Domain.Exceptions.Infrastructure;
-using ArtBiathlon.Domain.Exceptions.User;
 using ArtBiathlon.Domain.Interfaces.Dal.User;
 using ArtBiathlon.Domain.Interfaces.Dal.UserInfo;
 using ArtBiathlon.Domain.Interfaces.Services.User;
@@ -31,30 +29,21 @@ internal class SignInService : ISignInService
 
     public async Task<string> SignInAsync(SignInDto singInDto, CancellationToken token)
     {
-        await _validator.ValidateAndThrowAsync(singInDto, cancellationToken: token);
-
+        await _validator.ValidateAndThrowAsync(singInDto, token);
         var userModelWithId = await AuthenticateAndThrowAsync(singInDto, token);
-
         return await _jwtService.GenerateToken(userModelWithId, token);
     }
 
     private async Task<ModelDtoWithId<UserAuthenticationDto>> AuthenticateAndThrowAsync(SignInDto singInDto,
         CancellationToken token)
     {
-        try
-        {
-            var userModel = await GetUserModelAsync(singInDto.Login, token);
+        var userModel = await GetUserModelAsync(singInDto.Login, token);
 
-            HashPassword.ThrowIfPasswordNotEqualsToHash(
-                singInDto.Password,
-                userModel.Model.PasswordHash);
+        HashPassword.ThrowIfPasswordNotEqualsToHash(
+            singInDto.Password,
+            userModel.Model.PasswordHash);
 
-            return userModel;
-        }
-        catch (IncorrectPasswordException ex)
-        {
-            throw new DomainException(ex.Message);
-        }
+        return userModel;
     }
 
     private async Task<ModelDtoWithId<UserAuthenticationDto>> GetUserModelAsync(string login, CancellationToken token)

@@ -12,9 +12,9 @@ namespace ArtBiathlon.Services.Services.User;
 
 internal class JwtService : IJwtService
 {
-    private readonly string _issuer;
     private readonly string _audience;
     private readonly SigningCredentials _credentials;
+    private readonly string _issuer;
     private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
     private readonly IValidator<ModelDtoWithId<UserAuthenticationDto>> _validator;
 
@@ -22,7 +22,7 @@ internal class JwtService : IJwtService
     {
         var jwtKey = configuration.GetSection("Jwt:Key").Value!;
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
-       
+
         _validator = validator;
         _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
         _credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -30,7 +30,8 @@ internal class JwtService : IJwtService
         _audience = configuration.GetSection("Jwt:Audience").Value!;
     }
 
-    public async Task<string>GenerateToken(ModelDtoWithId<UserAuthenticationDto> userModelWithId, CancellationToken token)
+    public async Task<string> GenerateToken(ModelDtoWithId<UserAuthenticationDto> userModelWithId,
+        CancellationToken token)
     {
         await _validator.ValidateAndThrowAsync(userModelWithId, token);
         var claims = ExtractClaims(userModelWithId);
@@ -43,13 +44,13 @@ internal class JwtService : IJwtService
             _issuer,
             _audience,
             claims,
-            expires: DateTime.Now.AddDays(7), //todo: const; set 30 minutes when will add refresh token
+            expires: DateTime.Now.AddDays(7),
             signingCredentials: _credentials);
 
         return _jwtSecurityTokenHandler.WriteToken(token);
     }
 
-    private static IEnumerable<Claim> ExtractClaims(ModelDtoWithId<UserAuthenticationDto> userModelWithId)
+    private static Claim[] ExtractClaims(ModelDtoWithId<UserAuthenticationDto> userModelWithId)
     {
         return new[]
         {
