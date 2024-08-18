@@ -1,8 +1,9 @@
 using ArtBiathlon.Domain.Enums;
 
-namespace ArtBiathlon.Domain.Models.User.UserInfo;
+namespace ArtBiathlon.Domain.Models.User;
 
-public record UserInfoDto(
+public record CurrentUserDto(
+    string Login,
     string Surname,
     string Name,
     string MiddleName,
@@ -11,5 +12,4 @@ public record UserInfoDto(
     Rank Rank,
     Role Status,
     string Email,
-    byte[] UserAvatar
-);
+    byte[] UserAvatar);

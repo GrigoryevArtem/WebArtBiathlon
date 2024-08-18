@@ -1,11 +1,10 @@
-namespace ArtBiathlon.Api.Models;
+namespace ArtBiathlon.Domain.Models.StatisticalAnalysis;
 
-public record HrvModel
+public record HrvAverageDto
 {
-    public DateTimeOffset Date { get; init; }
     public double Readiness { get; init; }
-    public long Heart { get; init; }
-    public long Rmssd { get; init; }
+    public double Heart { get; init; }
+    public double Rmssd { get; init; }
     public double Rr { get; init; }
     public double Sdnn { get; init; }
     public double Sd { get; init; }

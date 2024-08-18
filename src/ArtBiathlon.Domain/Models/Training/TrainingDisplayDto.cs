@@ -1,6 +1,5 @@
 namespace ArtBiathlon.Domain.Models.Training;
 
-public record TrainingDto(
+public record TrainingDisplayDto(
     string TrainingName,
-    byte TrainingTypeId
-);
+    string TypeName);
