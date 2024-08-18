@@ -113,7 +113,7 @@ public class FactorAnalysisService : IFactorAnalysisService
         _factorAnalysisHelper.FactorAnalysis(matrix.Data, numOfFactors);
     }
 
-    public Dictionary<HrvIndicator, List<ComponentPredominantFactorValuePercentage>> GetRotatedLoadingToMultiplePie()
+    public Dictionary<HrvIndicator, List<ComponentPredominantFactorValuePercentageDto>> GetRotatedLoadingToMultiplePie()
     {
         var rotatedLoadingsMatrix = _factorAnalysisHelper.RotatedLoadingsMatrix;
 
@@ -121,7 +121,7 @@ public class FactorAnalysisService : IFactorAnalysisService
             throw new RotatedLoadingsMatrixNullReferenceException();
 
         var componentPredominantFactorValuePercentageByHrvIndicator =
-            new Dictionary<HrvIndicator, List<ComponentPredominantFactorValuePercentage>>();
+            new Dictionary<HrvIndicator, List<ComponentPredominantFactorValuePercentageDto>>();
 
         const double determiningPredominantValueLimit = 0.7;
 
@@ -138,12 +138,12 @@ public class FactorAnalysisService : IFactorAnalysisService
                 var componentPercentValue = Math.Abs(rotatedLoadingsMatrix[i, j]) / columnsSum[j] * 100;
                 if (componentPredominantFactorValuePercentageByHrvIndicator.ContainsKey(currentIndicator))
                     componentPredominantFactorValuePercentageByHrvIndicator[currentIndicator].Add(
-                        new ComponentPredominantFactorValuePercentage(
+                        new ComponentPredominantFactorValuePercentageDto(
                             (byte)(j + 1),
                             componentPercentValue));
                 else
                     componentPredominantFactorValuePercentageByHrvIndicator.Add(currentIndicator,
-                        new List<ComponentPredominantFactorValuePercentage>
+                        new List<ComponentPredominantFactorValuePercentageDto>
                             { new((byte)(j + 1), componentPercentValue) });
             }
         }

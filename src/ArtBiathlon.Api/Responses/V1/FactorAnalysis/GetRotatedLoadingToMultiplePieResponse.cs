@@ -4,4 +4,4 @@ using ArtBiathlon.Domain.Models.StatisticalAnalysis.FactorAnalysis;
 namespace ArtBiathlon.Api.Responses.V1.FactorAnalysis;
 
 public record GetRotatedLoadingToMultiplePieResponse(
-    Dictionary<HrvIndicator, List<ComponentPredominantFactorValuePercentage>> RotatedLoadingToMultiplePie);
+    Dictionary<HrvIndicator, List<ComponentPredominantFactorValuePercentageDto>> RotatedLoadingToMultiplePie);

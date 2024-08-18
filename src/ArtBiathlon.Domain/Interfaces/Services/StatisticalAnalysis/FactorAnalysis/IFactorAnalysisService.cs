@@ -16,5 +16,5 @@ public interface IFactorAnalysisService
     public FactorLoadingDto GetFactorLoadingMatrix();
     public double[] GetCumulativeVarianceExplained();
     public Task FactorAnalysisFit(MatrixDto matrix, int numOfFactors, CancellationToken token);
-    public Dictionary<HrvIndicator, List<ComponentPredominantFactorValuePercentage>> GetRotatedLoadingToMultiplePie();
+    public Dictionary<HrvIndicator, List<ComponentPredominantFactorValuePercentageDto>> GetRotatedLoadingToMultiplePie();
 }

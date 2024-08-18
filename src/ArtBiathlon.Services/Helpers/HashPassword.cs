@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using ArtBiathlon.Domain.Exceptions.User;
 
 namespace ArtBiathlon.Services.Helpers;
 
@@ -14,14 +15,11 @@ public static class HashPassword
     {
         return GetPasswordHash(password).SequenceEqual(passwordHash);
     }
-    
+
     public static void ThrowIfPasswordNotEqualsToHash(
-        string password, 
+        string password,
         byte[] passwordHash)
     {
-        if (!IsPasswordEqualsToHash(password, passwordHash))
-        {
-            throw new Exception(); // написать свои исключения
-        }
+        if (!IsPasswordEqualsToHash(password, passwordHash)) throw new IncorrectPasswordException();
     }
 }
