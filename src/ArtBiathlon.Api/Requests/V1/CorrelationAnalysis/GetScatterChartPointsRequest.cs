@@ -1,0 +1,5 @@
+using ArtBiathlon.Domain.Models.StatisticalAnalysis.CorrelationAnalysis;
+
+namespace ArtBiathlon.Api.Requests.V1.CorrelationAnalysis;
+
+public record GetScatterChartPointsRequest(SelectedHrvComponentsDto SelectedHrvComponentsDto);
