@@ -1,6 +1,6 @@
-using ArtBiathlon.Domain.Interfaces.Dal;
+using ArtBiathlon.Api.Requests.V1.Hrv;
+using ArtBiathlon.Api.Responses.V1.Hrv;
 using ArtBiathlon.Domain.Interfaces.Services.Hrv;
-using ArtBiathlon.Domain.Models.Hrv;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArtBiathlon.Api.Controllers;
@@ -19,26 +19,43 @@ public class HrvController : ControllerBase
     [HttpPost("create-hrv")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> Create(HrvDto hrvDto, CancellationToken token)
+    public async Task<ActionResult> Create(AddHrvRequest request, CancellationToken token)
     {
-        await _hrvService.CreateHrvAsync(hrvDto, token);
+        await _hrvService.CreateHrvAsync(request.HrvModel, token);
         return Ok();
     }
 
     [HttpGet("get-hrv-by-id")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<HrvDto>> GeById(long id, CancellationToken token)
+    public async Task<GetHrvResponse> GeById(long id, CancellationToken token)
     {
-        return await _hrvService.GetHrvByIdAsync(id, token);
+        var hrvModel = await _hrvService.GetHrvByIdAsync(id, token);
+        return new GetHrvResponse(hrvModel);
     }
 
     [HttpGet("get-hrvs")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<HrvDto[]> Get(CancellationToken token)
+    public async Task<GetHrvsResponse> Get(CancellationToken token)
     {
-        return await _hrvService.GetHrvsAsync(token);
+        var hrvModels = await _hrvService.GetHrvsAsync(token);
+        return new GetHrvsResponse(hrvModels);
+    }
+
+    [HttpPost("get-hrvs-by-biathlete-ids-and-camp-ids-and-type-days")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<GetHrvsResponse> GetByBiathleteIdsAndCampIdsAndTypeDays(
+        HrvFilterByBiathleteIdAndCampIdRequest request,
+        CancellationToken token)
+    {
+        var hrvModels = await _hrvService.GetHrvsAsync(
+            request.UserInfoId,
+            request.CampId,
+            request.DayType,
+            token);
+        return new GetHrvsResponse(hrvModels);
     }
 
     [HttpDelete("delete-hrv")]
@@ -52,8 +69,8 @@ public class HrvController : ControllerBase
     [HttpPut("update-hrv")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task Update(long id, HrvDto hrvDto, CancellationToken token)
+    public async Task Update(UpdateHrvRequest request, CancellationToken token)
     {
-        await _hrvService.UpdateHrvAsync(id, hrvDto, token);
+        await _hrvService.UpdateHrvAsync(request.Id, request.HrvModel, token);
     }
 }

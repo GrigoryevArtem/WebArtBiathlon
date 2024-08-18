@@ -1,10 +1,9 @@
 using System.Security.Claims;
-using ArtBiathlon.Domain.Interfaces.Dal;
-using ArtBiathlon.Domain.Interfaces.Dal.User;
+using ArtBiathlon.Api.Requests.V1.User;
+using ArtBiathlon.Api.Responses.V1.User;
 using ArtBiathlon.Domain.Interfaces.Services.User;
-using ArtBiathlon.Domain.Models;
-using ArtBiathlon.Domain.Models.User.UserCredential;
-using ArtBiathlon.Domain.Models.User.UserSign;
+using ArtBiathlon.Domain.Interfaces.Services.UserInfo;
+using ArtBiathlon.Domain.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,32 +13,36 @@ namespace ArtBiathlon.Api.Controllers;
 [Route("/v1/user")]
 public class UserController : ControllerBase
 {
-    private readonly IUserCredentialService _userCredentialService;
-    private readonly ISignInService _signInService;
-    private readonly ISignUpService _signUpService;
-
     private readonly CookieOptions _jwtCookieOptions = new()
     {
         HttpOnly = true,
-        Expires = DateTimeOffset.Now.AddDays(7),
+        Expires = DateTimeOffset.Now.AddDays(7)
     };
 
-    public UserController(IUserCredentialService userCredentialService, ISignInService signInService,
-        ISignUpService signUpService)
+    private readonly ISignInService _signInService;
+    private readonly ISignUpService _signUpService;
+    private readonly IUserCredentialService _userCredentialService;
+    private readonly IUserInfoService _userInfoService;
+
+    public UserController(
+        IUserCredentialService userCredentialService,
+        ISignInService signInService,
+        ISignUpService signUpService,
+        IUserInfoService userInfoService)
     {
         _userCredentialService = userCredentialService;
         _signInService = signInService;
         _signUpService = signUpService;
+        _userInfoService = userInfoService;
     }
 
     [HttpPost("sign-in")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task SignIn(SignInDto signInDto, CancellationToken token)
+    public async Task SignIn(SignInRequest request, CancellationToken token)
     {
-        var jwtToken = await _signInService.SignInAsync(signInDto, token);
-
+        var jwtToken = await _signInService.SignInAsync(request.SignInDto, token);
         Response.Cookies.Append("jwt", jwtToken, _jwtCookieOptions);
     }
 
@@ -47,22 +50,21 @@ public class UserController : ControllerBase
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task SignUp(SignUpDto signUpDto, CancellationToken token)
+    public async Task SignUp(SignUpRequest request, CancellationToken token)
     {
-        await _signUpService.SignUpAsync(signUpDto, token);
+        await _signUpService.SignUpAsync(request.SignUpDto, token);
     }
 
     [HttpPost("sign-up-and-sign-in")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task SignUpAndSignIn(SignUpDto signUpDto, CancellationToken token)
+    public async Task SignUpAndSignIn(SignUpRequest request, CancellationToken token)
     {
-        var jwtToken = await _signUpService.SignUpAndSignInAsync(signUpDto, token);
-        
+        var jwtToken = await _signUpService.SignUpAndSignInAsync(request.SignUpDto, token);
         Response.Cookies.Append("jwt", jwtToken, _jwtCookieOptions);
     }
-    
+
     [HttpPost("sign-out")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -70,61 +72,61 @@ public class UserController : ControllerBase
     public new IActionResult SignOut()
     {
         Response.Cookies.Delete("jwt");
-
         return Ok();
     }
-    
-   /* [HttpGet("get-user")]
+
+    [HttpGet("get-current-user")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<GetCurrentUserResponse> GetUsername()
+    public async Task<GetCurrentUserResponse> GetCurrentUser(CancellationToken token)
     {
         var identity = HttpContext.User.Identity as ClaimsIdentity;
+        var userId = long.Parse(identity!.FindFirst("UserId")!.Value);
+        var userCredential = await _userCredentialService.GetUserByIdAsync(userId, token);
+        var userInfo = await _userInfoService.GetUserInfoByIdAsync(userId, token);
+        var userInfoModel = userInfo.Model;
 
-        var userId = long.Parse(identity!.FindFirst("UserId")!.Value); // todo: const?
-        
-        var getUserQuery = new GetUserByIdQuery(userId);
+        var currentUser = new CurrentUserDto(
+            userCredential.Model.Login,
+            userInfoModel.Surname,
+            userInfoModel.Name,
+            userInfoModel.MiddleName,
+            userInfoModel.BirthDate,
+            userInfoModel.Gender,
+            userInfoModel.Rank,
+            userInfoModel.Status,
+            userInfoModel.Email,
+            userInfoModel.UserAvatar);
 
-        var response = await _mediator.Send(getUserQuery);
+        return new GetCurrentUserResponse(currentUser);
+    }
 
-        return new GetCurrentUserResponse(
-            response.UserModelWithId.Id,
-            response.UserModelWithId.UserModel.UserName,
-            response.UserModelWithId.UserModel.Email);
-    }*/
-    
     [HttpGet("get-user-by-id")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ModelDtoWithId<UserDto>> GeById(long id, CancellationToken token)
+    public async Task<GetUserResponse> GeById(long id, CancellationToken token)
     {
-        return await _userCredentialService.GetUserByIdAsync(id, token);
+        var user = await _userCredentialService.GetUserByIdAsync(id, token);
+        return new GetUserResponse(user);
     }
 
     [HttpGet("get-user-by-login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ModelDtoWithId<UserDto>> GeByLogin(string login, CancellationToken token)
+    public async Task<GetUserResponse> GeByLogin(string login, CancellationToken token)
     {
-        return await _userCredentialService.GetUserByLoginAsync(login, token);
-    }
-
-    [HttpPost("create-user")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> Create(UserDto userDto, CancellationToken token)
-    {
-        await _userCredentialService.CreateUserAsync(userDto, token);
-        return Ok();
+        var user = await _userCredentialService.GetUserByLoginAsync(login, token);
+        return new GetUserResponse(user);
     }
 
     [HttpGet("get-users")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ModelDtoWithId<UserDto>[]> Get(CancellationToken token)
+    public async Task<GetUsersResponse> Get(CancellationToken token)
     {
-        return await _userCredentialService.GetUsersAsync(token);
+        var users = await _userCredentialService.GetUsersAsync(token);
+        return new GetUsersResponse(users);
     }
 
     [HttpDelete("delete-user")]
@@ -138,8 +140,8 @@ public class UserController : ControllerBase
     [HttpPut("update-user")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task Update(long id, UserDto userDto, CancellationToken token)
+    public async Task Update(UpdateUserRequest request, CancellationToken token)
     {
-        await _userCredentialService.UpdateUserAsync(id, userDto, token);
+        await _userCredentialService.UpdateUserAsync(request.Id, request.UpdateUserDto, token);
     }
 }

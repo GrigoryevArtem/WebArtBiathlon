@@ -1,7 +1,6 @@
-using ArtBiathlon.Domain.Interfaces.Dal;
+using ArtBiathlon.Api.Requests.V1.TrainingsSchedule;
+using ArtBiathlon.Api.Responses.V1.TrainingsSchedule;
 using ArtBiathlon.Domain.Interfaces.Services.TrainingsSchedule;
-using ArtBiathlon.Domain.Models;
-using ArtBiathlon.Domain.Models.TrainingSchedule;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArtBiathlon.Api.Controllers;
@@ -20,26 +19,52 @@ public class TrainingsScheduleController : ControllerBase
     [HttpGet("get-trainings-schedule-by-id")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ModelDtoWithId<TrainingsScheduleDto>> GeById(long id, CancellationToken token)
+    public async Task<GetTrainingsScheduleResponse> GeById(long id, CancellationToken token)
     {
-        return await _trainingsScheduleService.GetTrainingsScheduleByIdAsync(id, token);
+        var trainingsSchedule =
+            await _trainingsScheduleService.GetTrainingsScheduleAsync(id, token);
+        return new GetTrainingsScheduleResponse(trainingsSchedule);
+    }
+
+    [HttpGet("get-trainings-schedule-by-date")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<GetTrainingsScheduleResponse> GeByDate(DateTimeOffset startDate, CancellationToken token)
+    {
+        var trainingsSchedule =
+            await _trainingsScheduleService.GetTrainingsScheduleAsync(startDate, token);
+        return new GetTrainingsScheduleResponse(trainingsSchedule);
     }
 
     [HttpPost("create-trainings-schedule")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> Create(TrainingsScheduleDto trainingsScheduleDto, CancellationToken token)
+    public async Task<ActionResult> Create(AddTrainingsScheduleRequest request, CancellationToken token)
     {
-        await _trainingsScheduleService.CreateTrainingsScheduleAsync(trainingsScheduleDto, token);
+        await _trainingsScheduleService.CreateTrainingsScheduleAsync(request.TrainingsSchedule, token);
         return Ok();
     }
 
     [HttpGet("get-trainings-schedule")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ModelDtoWithId<TrainingsScheduleDto>[]> Get(CancellationToken token)
+    public async Task<GetTrainingsSchedulesResponse> Get(CancellationToken token)
     {
-        return await _trainingsScheduleService.GetTrainingsSchedulesAsync(token);
+        var trainingsSchedulesModels =
+            await _trainingsScheduleService.GetTrainingsSchedulesAsync(token);
+
+        return new GetTrainingsSchedulesResponse(trainingsSchedulesModels);
+    }
+
+    [HttpGet("get-trainings-schedule-display")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<GetTrainingsSchedulesDisplayResponse> GetTrainingsSchedulesDisplay(CancellationToken token)
+    {
+        var trainingsSchedulesDisplayModels =
+            await _trainingsScheduleService.GetTrainingsSchedulesDisplayAsync(token);
+
+        return new GetTrainingsSchedulesDisplayResponse(trainingsSchedulesDisplayModels);
     }
 
     [HttpDelete("delete-trainings-schedule")]
@@ -53,8 +78,8 @@ public class TrainingsScheduleController : ControllerBase
     [HttpPut("update-trainings-schedule")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task Update(long id, TrainingsScheduleDto trainingsScheduleDto, CancellationToken token)
+    public async Task Update(UpdateTrainingsScheduleRequest request, CancellationToken token)
     {
-        await _trainingsScheduleService.UpdateTrainingScheduleAsync(id, trainingsScheduleDto, token);
+        await _trainingsScheduleService.UpdateTrainingScheduleAsync(request.Id, request.TrainingsSchedule, token);
     }
 }

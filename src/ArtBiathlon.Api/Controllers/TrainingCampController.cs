@@ -1,7 +1,6 @@
-using ArtBiathlon.Domain.Interfaces.Dal;
+using ArtBiathlon.Api.Requests.V1.TrainingCamp;
+using ArtBiathlon.Api.Responses.V1.TrainingCamp;
 using ArtBiathlon.Domain.Interfaces.Services.TrainingCamp;
-using ArtBiathlon.Domain.Models;
-using ArtBiathlon.Domain.Models.TrainingsCamp;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArtBiathlon.Api.Controllers;
@@ -16,32 +15,34 @@ public class TrainingCampController : ControllerBase
     {
         _trainingCampService = trainingCampService;
     }
-    
+
     [HttpGet("get-training-camp-by-id")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ModelDtoWithId<TrainingsCampDto>> GeById(long id, CancellationToken token)
+    public async Task<GetTrainingCampResponse> GeById(long id, CancellationToken token)
     {
-        return await _trainingCampService.GetTrainingCampByIdAsync(id, token);
+        var trainingCampModel = await _trainingCampService.GetTrainingCampByIdAsync(id, token);
+        return new GetTrainingCampResponse(trainingCampModel);
     }
-    
+
     [HttpPost("create-training-camp")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> Create(TrainingsCampDto trainingCampDto, CancellationToken token)
-    { 
-        await _trainingCampService.CreateTrainingCampAsync(trainingCampDto, token);
+    public async Task<ActionResult> Create(AddTrainingCampRequest request, CancellationToken token)
+    {
+        await _trainingCampService.CreateTrainingCampAsync(request.TrainingModel, token);
         return Ok();
     }
-    
+
     [HttpGet("get-training-camps")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ModelDtoWithId<TrainingsCampDto>[]> Get(CancellationToken token)
+    public async Task<GetTrainingCampsResponse> Get(CancellationToken token)
     {
-        return await _trainingCampService.GetTrainingCampsAsync(token);
+        var trainingCampsModel = await _trainingCampService.GetTrainingCampsAsync(token);
+        return new GetTrainingCampsResponse(trainingCampsModel);
     }
-    
+
     [HttpDelete("delete-training-camp")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -49,12 +50,12 @@ public class TrainingCampController : ControllerBase
     {
         await _trainingCampService.DeleteTrainingCampAsync(id, token);
     }
-    
+
     [HttpPut("update-training-camp")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task Update(long id, TrainingsCampDto trainingsCampDto, CancellationToken token)
+    public async Task Update(UpdateTrainingCampRequest request, CancellationToken token)
     {
-        await _trainingCampService.UpdateTrainingCampAsync(id, trainingsCampDto, token);
+        await _trainingCampService.UpdateTrainingCampAsync(request.Id, request.TrainingsModel, token);
     }
 }
