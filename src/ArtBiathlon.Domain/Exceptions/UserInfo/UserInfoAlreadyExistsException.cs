@@ -2,11 +2,10 @@
 
 namespace ArtBiathlon.Domain.Exceptions.UserInfo;
 
-public class UserInfoAlreadyExistsException : Exception
+public class UserInfoAlreadyExistsException : AlreadyExistException
 {
     public UserInfoAlreadyExistsException() : base("This user info already exists")
     {
-        
     }
 
     protected UserInfoAlreadyExistsException(SerializationInfo info, StreamingContext context) : base(info, context)

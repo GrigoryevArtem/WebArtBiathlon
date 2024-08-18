@@ -2,7 +2,7 @@
 
 namespace ArtBiathlon.Domain.Exceptions.User;
 
-public class IncorrectPasswordException : Exception
+public class IncorrectPasswordException : IncorrectParametersException
 {
     public IncorrectPasswordException() : base("Incorrect password")
     {

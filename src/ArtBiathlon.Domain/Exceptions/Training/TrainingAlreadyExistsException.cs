@@ -2,7 +2,7 @@ using System.Runtime.Serialization;
 
 namespace ArtBiathlon.Domain.Exceptions.Training;
 
-public class TrainingAlreadyExistsException : Exception
+public class TrainingAlreadyExistsException : AlreadyExistException
 {
     public TrainingAlreadyExistsException() : base("This training already exists")
     {

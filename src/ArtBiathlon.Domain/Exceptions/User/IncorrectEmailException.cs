@@ -2,7 +2,7 @@
 
 namespace ArtBiathlon.Domain.Exceptions.User;
 
-public class IncorrectEmailException : Exception
+public class IncorrectEmailException : IncorrectParametersException
 {
     public IncorrectEmailException() : base("Incorrect Email")
     {

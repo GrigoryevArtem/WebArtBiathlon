@@ -2,7 +2,7 @@
 
 namespace ArtBiathlon.Domain.Exceptions.User;
 
-public class UsersNotFoundException : Exception
+public class UsersNotFoundException : NotFoundException
 {
     public UsersNotFoundException() : base("Users not found")
     {

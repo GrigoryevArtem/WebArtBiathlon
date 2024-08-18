@@ -2,7 +2,7 @@
 
 namespace ArtBiathlon.Domain.Exceptions.User;
 
-public class EmailAlreadyExistsException : Exception
+public class EmailAlreadyExistsException : AlreadyExistException
 {
     public EmailAlreadyExistsException() : base("Email already exists")
     {

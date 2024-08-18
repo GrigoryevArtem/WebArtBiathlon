@@ -2,7 +2,7 @@
 
 namespace ArtBiathlon.Domain.Exceptions.User;
 
-public class UserNameAlreadyExistsException : Exception
+public class UserNameAlreadyExistsException : AlreadyExistException
 {
     public UserNameAlreadyExistsException() : base("Username already exists")
     {

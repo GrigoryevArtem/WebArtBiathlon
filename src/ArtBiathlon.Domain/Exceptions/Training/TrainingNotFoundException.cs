@@ -2,7 +2,7 @@ using System.Runtime.Serialization;
 
 namespace ArtBiathlon.Domain.Exceptions.Training;
 
-public class TrainingNotFoundException : Exception
+public class TrainingNotFoundException : NotFoundException
 {
     public TrainingNotFoundException() : base("Training not found")
     {

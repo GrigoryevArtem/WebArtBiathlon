@@ -2,7 +2,7 @@ using System.Runtime.Serialization;
 
 namespace ArtBiathlon.Domain.Exceptions.Hrv;
 
-public class HrvIndicatorsNotFoundException : Exception
+public class HrvIndicatorsNotFoundException : NotFoundException
 {
     public HrvIndicatorsNotFoundException() : base("Hrv indicators not found")
     {

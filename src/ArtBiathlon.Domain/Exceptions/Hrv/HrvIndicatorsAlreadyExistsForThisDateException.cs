@@ -2,13 +2,14 @@ using System.Runtime.Serialization;
 
 namespace ArtBiathlon.Domain.Exceptions.Hrv;
 
-public class HrvIndicatorsAlreadyExistsForThisDateException : Exception
+public class HrvIndicatorsAlreadyExistsForThisDateException : AlreadyExistException
 {
     public HrvIndicatorsAlreadyExistsForThisDateException() : base("Hrv indicators already exists for this date")
     {
     }
 
-    protected HrvIndicatorsAlreadyExistsForThisDateException(SerializationInfo info, StreamingContext context) : base(info, context)
+    protected HrvIndicatorsAlreadyExistsForThisDateException(SerializationInfo info, StreamingContext context) :
+        base(info, context)
     {
     }
 
@@ -16,7 +17,8 @@ public class HrvIndicatorsAlreadyExistsForThisDateException : Exception
     {
     }
 
-    public HrvIndicatorsAlreadyExistsForThisDateException(string? message, Exception? innerException) : base(message, innerException)
+    public HrvIndicatorsAlreadyExistsForThisDateException(string? message, Exception? innerException) : base(message,
+        innerException)
     {
     }
 }

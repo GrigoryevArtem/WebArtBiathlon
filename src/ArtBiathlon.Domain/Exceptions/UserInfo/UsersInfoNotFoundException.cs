@@ -2,7 +2,7 @@
 
 namespace ArtBiathlon.Domain.Exceptions.UserInfo;
 
-public class UsersInfoNotFoundException : Exception
+public class UsersInfoNotFoundException : NotFoundException
 {
     public UsersInfoNotFoundException() : base("Users info not found")
     {

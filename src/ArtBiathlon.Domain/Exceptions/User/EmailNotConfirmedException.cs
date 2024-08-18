@@ -2,7 +2,7 @@
 
 namespace ArtBiathlon.Domain.Exceptions.User;
 
-public class EmailNotConfirmedException : Exception
+public class EmailNotConfirmedException : IncorrectParametersException
 {
     public EmailNotConfirmedException() : base("Email not confirmed")
     {

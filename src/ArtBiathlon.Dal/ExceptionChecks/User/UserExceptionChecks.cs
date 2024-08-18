@@ -10,30 +10,21 @@ internal static class UserExceptionChecks
     {
         var exists = await IsUserExistsByUserNameAsync(userName, connection);
 
-        if (exists)
-        {
-            throw new UserNameAlreadyExistsException();
-        }
+        if (exists) throw new UserNameAlreadyExistsException();
     }
 
     public static async Task ThrowIfUserNotFoundAsync(long userId, IDbConnection connection)
     {
         var exists = await IsUserExistsAsync(userId, connection);
 
-        if (!exists)
-        {
-            throw new UserNotFoundException();
-        }
+        if (!exists) throw new UserNotFoundException();
     }
 
     public static async Task ThrowIfUserNotFoundByUserNameAsync(string userName, IDbConnection connection)
     {
         var exists = await IsUserExistsByUserNameAsync(userName, connection);
 
-        if (!exists)
-        {
-            throw new UserNotFoundException();
-        }
+        if (!exists) throw new UserNotFoundException();
     }
 
     private static async Task<bool> IsUserExistsAsync(long userId, IDbConnection connection)
@@ -42,7 +33,7 @@ internal static class UserExceptionChecks
             SELECT EXISTS(
                 SELECT 1
                 FROM user_credential
-                WHERE id = @UserId
+                WHERE user_info_id = @UserId
                 )";
 
         var sqlParams = new
@@ -79,5 +70,4 @@ internal static class UserExceptionChecks
 
         return exists;
     }
-
 }
