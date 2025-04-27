@@ -32,7 +32,7 @@
 
 ## 📄 Презентация
 
-[Ссылка на презентацию проекта](https://drive.google.com/file/d/1UYT6PGROjvyCG2_37EjRAADmoCkNSDvN/view?usp=sharing)
+[Ссылка на презентацию проекта](https://docs.google.com/presentation/d/1JX-FGnOdwu0jkH5p5U2XdKubwNCb-whx/edit?usp=sharing&ouid=106091842381167893871&rtpof=true&sd=true)
 
 ---
 
